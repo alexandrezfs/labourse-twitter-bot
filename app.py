@@ -1,0 +1,30 @@
+# coding: utf-8
+from twitter_follow_bot import auto_follow
+from twitter_follow_bot import auto_unfollow_nonfollowers
+
+auto_unfollow_nonfollowers()
+
+auto_follow("lyon", count=40)
+auto_follow("libraire", count=40)
+auto_follow("librairie", count=40)
+auto_follow("mangas", count=40)
+auto_follow("naruto", count=40)
+auto_follow("comics", count=40)
+auto_follow("one piece", count=40)
+auto_follow("fairy tail", count=40)
+auto_follow("batman", count=40)
+auto_follow("marvel", count=40)
+auto_follow("cinema", count=40)
+auto_follow("films", count=40)
+auto_follow("dvd", count=40)
+auto_follow("culture", count=40)
+auto_follow("culturel", count=40)
+auto_follow("pleiade", count=40)
+auto_follow("bd", count=40)
+auto_follow("bandes dessinées", count=40)
+auto_follow("tintin", count=40)
+auto_follow("asterix", count=40)
+auto_follow("disney", count=40)
+auto_follow("superman", count=40)
+auto_follow("avengers", count=40)
+auto_follow("lyonnais", count=40)
