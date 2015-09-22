@@ -1,16 +1,32 @@
 from twitter import Twitter, OAuth, TwitterHTTPError
 import os
+import unicodedata as ud
 
-OAUTH_TOKEN = "1660247222-17HtsAMZtgj4sfnPbvG908KHSmAJF34U0aSKQW3"
-OAUTH_SECRET = "kGcfgSu3ivkHCC2cQJANzgxZDFXZOAVStT4r60Leltbed"
-CONSUMER_KEY = "dSZ3yc1P6ilkHNW9YnXXIWjdF"
-CONSUMER_SECRET = "a4lknxvmrxuP9UjSaZQeMkRxpw74mu8gJhbTWuCjpUzmty66Qn"
+OAUTH_TOKEN = "2982362590-fajNJBRKCDtZbqbrsMAnJmWp3FeHnz92yygSTVX"
+OAUTH_SECRET = "kQ8zLM7UGshGIxgNzPAnWK8oNV9qdUBkyfCwsUGj2O9F5"
+CONSUMER_KEY = "ZeU8R4XCpL2YG2JCOEDDylKvp"
+CONSUMER_SECRET = "XzZrU0I4DVvBWF6b1zStlQBeYNn86doKkmSBK24UMXKojVQkaH"
 TWITTER_HANDLE = ""
 
 ALREADY_FOLLOWED_FILE = "already-followed.csv"
 
 t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET,
-            CONSUMER_KEY, CONSUMER_SECRET))
+                       CONSUMER_KEY, CONSUMER_SECRET))
+
+latin_letters = {}
+
+
+def is_latin(uchr):
+    try:
+        return latin_letters[uchr]
+    except KeyError:
+        return latin_letters.setdefault(uchr, 'LATIN' in ud.name(uchr))
+
+
+def only_roman_chars(unistr):
+    return all(is_latin(uchr)
+               for uchr in unistr
+               if uchr.isalpha())  # isalpha suggested by John Machin
 
 
 def search_tweets(q, count=100, result_type="recent"):
@@ -73,8 +89,8 @@ def get_do_not_follow_list():
         with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
             out_file.write("")
 
-        # read in the list of user IDs that the bot has already followed in the
-        # past
+            # read in the list of user IDs that the bot has already followed in the
+            # past
     do_not_follow = set()
     dnf_list = []
     with open(ALREADY_FOLLOWED_FILE) as in_file:
@@ -99,9 +115,9 @@ def auto_follow(q, count=100, result_type="recent"):
     for tweet in result["statuses"]:
         try:
             if (tweet["user"]["screen_name"] != TWITTER_HANDLE and
-                    tweet["user"]["id"] not in following and
-                    tweet["user"]["id"] not in do_not_follow):
-
+                        only_roman_chars(tweet["user"]["screen_name"]) and
+                        tweet["user"]["id"] not in following and
+                        tweet["user"]["id"] not in do_not_follow):
                 t.friendships.create(user_id=tweet["user"]["id"], follow=False)
                 following.update(set([tweet["user"]["id"]]))
 
@@ -122,17 +138,17 @@ def auto_follow_followers_for_user(user_screen_name, count=100):
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
     followers_for_user = set(t.followers.ids(screen_name=user_screen_name)["ids"][:count]);
     do_not_follow = get_do_not_follow_list()
-    
+
     for user_id in followers_for_user:
         try:
-            if (user_id not in following and 
-                user_id not in do_not_follow):
-
+            if (user_id not in following and
+                        user_id not in do_not_follow):
                 t.friendships.create(user_id=user_id, follow=False)
                 print("followed %s" % user_id)
 
         except TwitterHTTPError as e:
             print("error: %s" % (str(e)))
+
 
 def auto_follow_followers():
     """
@@ -201,7 +217,7 @@ def auto_mute_following():
 
     # put user IDs of people you do not want to mute here
     users_keep_unmuted = set([])
-            
+
     # mute all        
     for user_id in not_muted:
         if user_id not in users_keep_unmuted:
@@ -217,7 +233,7 @@ def auto_unmute():
 
     # put user IDs of people you want to remain muted here
     users_keep_muted = set([])
-            
+
     # mute all        
     for user_id in muted:
         if user_id not in users_keep_muted:
